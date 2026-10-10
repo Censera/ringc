@@ -1,0 +1,59 @@
+Standard {
+    // School year, all levels
+    2026-9-7 .. 2027-6-26
+}
+
+Ramadan {
+    // Estimate
+    2027-2-8 .. 2027-3-9
+}
+
+Holidays {
+	// Weekend
+	Sunday
+	
+    // Break 1
+    2026-10-18 .. 2026-10-25,
+
+    // Unity Day
+    2026-10-31,
+
+    // Green March
+    2026-11-6,
+
+    // Independence Day
+    2026-11-18,
+
+    // Break 2
+    2026-12-6 .. 2026-12-13,
+
+    // New Year
+    2027-1-1,
+
+    // Independence Manifesto
+    2027-1-11,
+
+    // Amazigh New Year
+    2027-1-14,
+
+    // Mid-year break
+    2027-1-24 .. 2027-1-31,
+
+    // Eid al-Fitr (estimate)
+    2027-3-8 .. 2027-3-11,
+
+    // Break 3
+    2027-3-21 .. 2027-3-28,
+
+    // Labour Day
+    2027-5-1,
+
+    // Break 4
+    2027-5-9 .. 2027-5-16,
+
+    // Eid al-Adha (estimate)
+    2027-5-16 .. 2027-5-18,
+
+    // Islamic New Year (estimate)
+    2027-6-6 .. 2027-6-7
+}
