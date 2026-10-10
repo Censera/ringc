@@ -1,6 +1,13 @@
-[package]
-name = "ringc"
-version = "26.0.0"
-edition = "2024"
+[workspace]
+resolver = "3"
+members = [
+    "crates/compiler",
+    "crates/firmware",
+    "crates/format",
+]
 
-[dependencies]
+# The firmware only builds for thumbv7em-none-eabihf
+default-members = [
+    "crates/compiler",
+    "crates/format",
+]

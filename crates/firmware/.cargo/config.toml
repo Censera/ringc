@@ -1,0 +1,7 @@
+# Applies when cargo runs from this directory.
+[build]
+target = "thumbv7em-none-eabihf"
+
+[target.thumbv7em-none-eabihf]
+rustflags = ["-C", "link-arg=-Tlink.x"]
+runner = "probe-rs run --chip STM32F407VETx"

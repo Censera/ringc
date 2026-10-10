@@ -4,17 +4,15 @@ use std::path::Path;
 use crate::{
     config,
     error::Error,
-    lex,
-    parse,
+    lex, parse,
     tree::{Config, ConfigEntry, Date, Schedule, Time},
 };
 
 pub fn run(root: &Path, date: &Date) -> Result<Schedule, Error> {
-    let source = fs::read_to_string(root.join("ring.cat")).map_err(|_| {
-        Error::ScheduleNotFound {
+    let source =
+        fs::read_to_string(root.join("ring.cat")).map_err(|_| Error::ScheduleNotFound {
             name: "ring.cat".to_owned(),
-        }
-    })?;
+        })?;
 
     let tokens = lex::lex(&source)?;
     let config = config::parse(&tokens)?;
@@ -24,22 +22,17 @@ pub fn run(root: &Path, date: &Date) -> Result<Schedule, Error> {
 }
 
 fn load(root: &Path, entry: &ConfigEntry) -> Result<Schedule, Error> {
-   	let path = root.join("bell").join(format!("{}.bell", entry.name));
+    let path = root.join("bell").join(format!("{}.bell", entry.name));
 
-    let source = fs::read_to_string(&path).map_err(|_| {
-        Error::ScheduleNotFound {
-            name: entry.name.clone(),
-        }
+    let source = fs::read_to_string(&path).map_err(|_| Error::ScheduleNotFound {
+        name: entry.name.clone(),
     })?;
 
     let tokens = lex::lex(&source)?;
     parse::parse(&tokens)
 }
 
-pub fn resolve<'a>(
-    config: &'a Config,
-    date: &Date,
-) -> Result<&'a ConfigEntry, Error> {
+pub fn resolve<'a>(config: &'a Config, date: &Date) -> Result<&'a ConfigEntry, Error> {
     let mut best: Option<(&ConfigEntry, u8)> = None;
 
     for entry in &config.entries {
@@ -64,8 +57,7 @@ pub fn resolve<'a>(
         }
     }
 
-    best.map(|(entry, _)| entry)
-        .ok_or(Error::NoSchedule)
+    best.map(|(entry, _)| entry).ok_or(Error::NoSchedule)
 }
 
 fn entry_priority(entry: &ConfigEntry, date: &Date) -> Option<u8> {
@@ -150,9 +142,7 @@ impl Clock {
         let next = schedule
             .times
             .iter()
-            .position(|ring| {
-                (ring.hour, ring.minute) >= (time.hour, time.minute)
-            })
+            .position(|ring| (ring.hour, ring.minute) >= (time.hour, time.minute))
             .unwrap_or(schedule.times.len());
 
         Self { schedule, next }
@@ -180,47 +170,42 @@ mod tests {
     #[test]
     fn run_loads_active_schedule() {
         let root = std::env::temp_dir().join("bellc-test");
-    
+
         let _ = std::fs::remove_dir_all(&root);
         std::fs::create_dir_all(root.join("bell")).unwrap();
-    
+
         std::fs::write(
             root.join("ring.cat"),
             r#"
             standard {
                 default
             }
-    
+
             holidays {
                 "2026-06-10" .. "2026-06-15"
             }
             "#,
         )
         .unwrap();
-    
-        std::fs::write(
-            root.join("bell/standard.bell"),
-            r#""08:00", "09:00""#,
+
+        std::fs::write(root.join("bell/standard.bell"), r#""08:00", "09:00""#).unwrap();
+
+        std::fs::write(root.join("bell/holidays.bell"), r#""10:00", "11:00""#).unwrap();
+
+        let schedule = run(
+            &root,
+            &Date {
+                year: Some(2026),
+                month: Some(6),
+                day: Some(12),
+            },
         )
         .unwrap();
-    
-        std::fs::write(
-            root.join("bell/holidays.bell"),
-            r#""10:00", "11:00""#,
-        )
-        .unwrap();
-    
-        let schedule = run(&root, &Date {
-            year: Some(2026),
-            month: Some(6),
-            day: Some(12),
-        })
-        .unwrap();
-    
+
         assert_eq!(schedule.times.len(), 2);
         assert_eq!(schedule.times[0].hour, 10);
         assert_eq!(schedule.times[1].hour, 11);
-    
+
         let _ = std::fs::remove_dir_all(root);
     }
 
@@ -240,28 +225,28 @@ mod tests {
     #[test]
     fn clock_rings() {
         let schedule = Schedule {
-            times: vec![
-                Time { hour: 8, minute: 0 },
-                Time { hour: 9, minute: 0 },
-            ],
+            times: vec![Time { hour: 8, minute: 0 }, Time { hour: 9, minute: 0 }],
         };
-    
+
         let mut clock = Clock::new(schedule, &Time { hour: 7, minute: 0 });
-    
+
         assert!(clock.tick(&Time { hour: 8, minute: 0 }));
         assert!(!clock.tick(&Time { hour: 8, minute: 0 }));
-        assert!(!clock.tick(&Time { hour: 8, minute: 30 }));
+        assert!(!clock.tick(&Time {
+            hour: 8,
+            minute: 30
+        }));
         assert!(clock.tick(&Time { hour: 9, minute: 0 }));
     }
-    
+
     #[test]
     fn clock_stops_after_last() {
         let schedule = Schedule {
             times: vec![Time { hour: 8, minute: 0 }],
         };
-    
+
         let mut clock = Clock::new(schedule, &Time { hour: 7, minute: 0 });
-    
+
         assert!(clock.tick(&Time { hour: 8, minute: 0 }));
         assert!(!clock.tick(&Time { hour: 9, minute: 0 }));
     }
@@ -381,53 +366,59 @@ mod tests {
     #[test]
     fn clock_starts_before_ring() {
         let schedule = Schedule {
-            times: vec![
-                Time { hour: 8, minute: 0 },
-                Time { hour: 9, minute: 0 },
-            ],
+            times: vec![Time { hour: 8, minute: 0 }, Time { hour: 9, minute: 0 }],
         };
-    
+
         let mut clock = Clock::new(
             schedule,
-            &Time { hour: 7, minute: 30 },
+            &Time {
+                hour: 7,
+                minute: 30,
+            },
         );
-    
+
         assert!(clock.tick(&Time { hour: 8, minute: 0 }));
     }
-    
+
     #[test]
     fn clock_starts_between_rings() {
         let schedule = Schedule {
-            times: vec![
-                Time { hour: 8, minute: 0 },
-                Time { hour: 9, minute: 0 },
-            ],
+            times: vec![Time { hour: 8, minute: 0 }, Time { hour: 9, minute: 0 }],
         };
-    
+
         let mut clock = Clock::new(
             schedule,
-            &Time { hour: 8, minute: 30 },
+            &Time {
+                hour: 8,
+                minute: 30,
+            },
         );
-    
-        assert!(!clock.tick(&Time { hour: 8, minute: 30 }));
+
+        assert!(!clock.tick(&Time {
+            hour: 8,
+            minute: 30
+        }));
         assert!(clock.tick(&Time { hour: 9, minute: 0 }));
     }
-    
+
     #[test]
     fn clock_starts_after_last_ring() {
         let schedule = Schedule {
-            times: vec![
-                Time { hour: 8, minute: 0 },
-                Time { hour: 9, minute: 0 },
-            ],
+            times: vec![Time { hour: 8, minute: 0 }, Time { hour: 9, minute: 0 }],
         };
-    
+
         let mut clock = Clock::new(
             schedule,
-            &Time { hour: 10, minute: 0 },
+            &Time {
+                hour: 10,
+                minute: 0,
+            },
         );
-    
-        assert!(!clock.tick(&Time { hour: 10, minute: 0 }));
+
+        assert!(!clock.tick(&Time {
+            hour: 10,
+            minute: 0
+        }));
     }
 
     #[test]
@@ -439,17 +430,14 @@ mod tests {
             }
             "#,
         );
-    
+
         assert_eq!(
             resolve(&config, &date(2026, 12, 25)).unwrap().name,
             "holiday"
         );
-    
-        assert_eq!(
-            resolve(&config, &date(2027, 1, 5)).unwrap().name,
-            "holiday"
-        );
-    
+
+        assert_eq!(resolve(&config, &date(2027, 1, 5)).unwrap().name, "holiday");
+
         assert!(matches!(
             resolve(&config, &date(2027, 1, 15)),
             Err(Error::NoSchedule)
@@ -465,17 +453,14 @@ mod tests {
             }
             "#,
         );
-    
+
         assert_eq!(
             resolve(&config, &date(2026, 5, 30)).unwrap().name,
             "holiday"
         );
-    
-        assert_eq!(
-            resolve(&config, &date(2026, 6, 3)).unwrap().name,
-            "holiday"
-        );
-    
+
+        assert_eq!(resolve(&config, &date(2026, 6, 3)).unwrap().name, "holiday");
+
         assert!(matches!(
             resolve(&config, &date(2026, 6, 10)),
             Err(Error::NoSchedule)

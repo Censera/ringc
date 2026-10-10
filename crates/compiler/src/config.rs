@@ -46,26 +46,26 @@ pub fn parse(tokens: &[Token]) -> Result<Config, Error> {
                     let position = index;
                     let from = parse_date(from, position)?;
                     index += 1;
-                
+
                     if !matches!(tokens.get(index), Some(Token::Range)) {
                         return Err(Error::UnexpectedToken { position: index });
                     }
-                
+
                     index += 1;
-                
+
                     let to_position = index;
-                
+
                     let to = match tokens.get(index) {
                         Some(Token::String(to)) => parse_date(to, to_position)?,
                         _ => {
                             return Err(Error::UnexpectedToken { position: index });
                         }
                     };
-                
+
                     if !is_concrete(&from) {
                         return Err(Error::UnexpectedToken { position });
                     }
-                
+
                     if !is_concrete(&to) {
                         return Err(Error::UnexpectedToken {
                             position: to_position,
@@ -97,9 +97,9 @@ pub fn parse(tokens: &[Token]) -> Result<Config, Error> {
                             position,
                         });
                     }
-                
+
                     index += 1;
-                
+
                     rules.push(Rule::Range { from, to });
                 }
 
@@ -149,7 +149,7 @@ fn parse_date(value: &str, position: usize) -> Result<Date, Error> {
         });
     }
 
-    if let Some(month) = month 
+    if let Some(month) = month
         && let Some(day) = day {
             let max_day = days_in_month(year, month);
 
@@ -300,7 +300,7 @@ mod tests {
                 day: Some(31),
             }
         );
-    
+
         assert_eq!(
             parse_date("2026-*-31", 0).unwrap(),
             Date {
@@ -309,7 +309,7 @@ mod tests {
                 day: Some(31),
             }
         );
-    
+
         assert_eq!(
             parse_date("*-*-31", 0).unwrap(),
             Date {
@@ -330,9 +330,9 @@ mod tests {
             "#,
         )
         .unwrap();
-    
+
         assert!(parse(&tokens).is_err());
-    
+
         let tokens = lex(
             r#"
             holidays {
@@ -341,7 +341,7 @@ mod tests {
             "#,
         )
         .unwrap();
-    
+
         assert!(parse(&tokens).is_err());
     }
 
@@ -355,7 +355,7 @@ mod tests {
             "#,
         )
         .unwrap();
-    
+
         assert!(matches!(
             parse(&tokens),
             Err(Error::InvalidRange { .. })

@@ -1,6 +1,8 @@
 mod cli;
+mod compile;
 mod config;
 mod error;
+mod flash;
 mod lex;
 mod parse;
 mod schedule;

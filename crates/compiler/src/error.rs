@@ -2,16 +2,29 @@ use std::fmt;
 
 #[derive(Debug)]
 pub enum Error {
-    UnexpectedCharacter { character: char, position: usize },
-    UnterminatedString { position: usize },
-    InvalidTime { value: String, position: usize },
-    InvalidDate { value: String, position: usize },
+    UnexpectedCharacter {
+        character: char,
+        position: usize,
+    },
+    UnterminatedString {
+        position: usize,
+    },
+    InvalidTime {
+        value: String,
+        position: usize,
+    },
+    InvalidDate {
+        value: String,
+        position: usize,
+    },
     InvalidRange {
         from: String,
         to: String,
         position: usize,
     },
-    UnexpectedToken { position: usize },
+    UnexpectedToken {
+        position: usize,
+    },
     NoSchedule,
     AmbiguousSchedule,
     ScheduleNotFound {
@@ -55,12 +68,8 @@ impl fmt::Display for Error {
             Self::ScheduleNotFound { name } => {
                 write!(f, "schedule file \"{name}.bell\" not found")
             }
-            
-            Self::InvalidRange {
-                from,
-                to,
-                position,
-            } => {
+
+            Self::InvalidRange { from, to, position } => {
                 write!(f, "invalid range \"{from}\" .. \"{to}\" at {position}")
             }
         }
