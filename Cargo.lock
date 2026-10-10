@@ -125,24 +125,24 @@ dependencies = [
 ]
 
 [[package]]
-name = "r__firmware"
+name = "ring_firmware"
 version = "0.1.0"
 dependencies = [
  "cortex-m",
  "cortex-m-rt",
  "panic-halt",
- "r__format",
+ "ring_format",
 ]
 
 [[package]]
-name = "r__format"
-version = "0.1.0"
+name = "ring_format"
+version = "26.0.0"
 
 [[package]]
-name = "ring"
+name = "ringc"
 version = "26.0.0"
 dependencies = [
- "r__format",
+ "ring_format",
 ]
 
 [[package]]

@@ -1,3 +1,5 @@
+use std::process::ExitCode;
+
 mod cli;
 mod compile;
 mod config;
@@ -8,6 +10,6 @@ mod parse;
 mod schedule;
 mod tree;
 
-fn main() {
-    cli::run();
+fn main() -> ExitCode {
+    cli::run()
 }

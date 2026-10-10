@@ -1,6 +1,6 @@
 use std::{env, fs, process::ExitCode};
 
-use crate::{config, lex, parse};
+use crate::schedule;
 
 pub fn run() -> ExitCode {
     let mut args = env::args().skip(1);
@@ -109,11 +109,11 @@ Update an installed schedule:
     ringc update
 
 Project files:
-    ring.cat
-    bell/
-        standard.bell
-        ramadan.bell
-        holidays.bell
+    ring.schedule
+    schedule/
+        standard.time
+        ramadan.time
+        holidays.time
         ...
 "
     );
@@ -136,28 +136,28 @@ usage:
 fn init() -> ExitCode {
     let root = std::path::Path::new(".");
 
-    if root.join("ring.cat").exists() || root.join("bell").exists() {
+    if root.join("ring.schedule").exists() || root.join("schedule").exists() {
         eprintln!("ringc: project already exists");
         return ExitCode::FAILURE;
     }
 
-    if let Err(error) = fs::create_dir(root.join("bell")) {
-        eprintln!("ringc: cannot create bell directory: {error}");
+    if let Err(error) = fs::create_dir(root.join("schedule")) {
+        eprintln!("ringc: cannot create schedule directory: {error}");
         return ExitCode::FAILURE;
     }
 
     let files = [
-        ("ring.cat", include_str!("../templates/ring.schedule")),
+        ("ring.schedule", include_str!("../templates/ring.schedule")),
         (
-            "schedule/standard.bell",
+            "schedule/standard.time",
             include_str!("../templates/schedule/standard.time"),
         ),
         (
-            "schedule/ramadan.bell",
+            "schedule/ramadan.time",
             include_str!("../templates/schedule/ramadan.time"),
         ),
         (
-            "schedule/holidays.bell",
+            "schedule/holidays.time",
             include_str!("../templates/schedule/holidays.time"),
         ),
     ];
@@ -174,32 +174,17 @@ fn init() -> ExitCode {
 }
 
 fn check(path: &str) -> ExitCode {
-    let path = std::path::Path::new(path);
-    let ring = path.join("ring.cat");
-
-    let source = match fs::read_to_string(&ring) {
-        Ok(source) => source,
-        Err(error) => {
-            eprintln!("ringc: cannot read {}: {error}", ring.display());
-            return ExitCode::FAILURE;
+    match schedule::load_project(std::path::Path::new(path)) {
+        Ok(_) => {
+            println!("ringc: check passed");
+            ExitCode::SUCCESS
         }
-    };
 
-    let tokens = match lex::lex(&source) {
-        Ok(tokens) => tokens,
-        Err(error) => {
-            eprintln!("ringc: {error}");
-            return ExitCode::FAILURE;
+        Err(failure) => {
+            eprintln!("ringc: {failure}");
+            ExitCode::FAILURE
         }
-    };
-
-    if let Err(error) = config::parse(&tokens) {
-        eprintln!("ringc: {error}");
-        return ExitCode::FAILURE;
     }
-
-    println!("ringc: check passed");
-    ExitCode::SUCCESS
 }
 
 fn build(_path: &str) -> ExitCode {

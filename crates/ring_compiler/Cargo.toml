@@ -1,7 +1,7 @@
 [package]
-name = "ring"
+name = "ringc"
 version = "26.0.0"
 edition = "2024"
 
 [dependencies]
-r__format = { path = "../r__format" }
+ring_format = { path = "../ring_format" }
