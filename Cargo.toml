@@ -1,13 +1,13 @@
 [workspace]
 resolver = "3"
 members = [
-    "crates/compiler",
-    "crates/firmware",
-    "crates/format",
+    "crates/r__compiler",
+    "crates/r__firmware",
+    "crates/r__format",
 ]
 
 # The firmware only builds for thumbv7em-none-eabihf
 default-members = [
-    "crates/compiler",
-    "crates/format",
+    "crates/r__compiler",
+    "crates/r__format",
 ]

@@ -1,7 +1,7 @@
 [package]
-name = "compiler"
+name = "ring"
 version = "26.0.0"
 edition = "2024"
 
 [dependencies]
-format = { path = "../format" }
+r__format = { path = "../r__format" }

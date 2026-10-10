@@ -1,10 +1,10 @@
 [package]
-name = "firmware"
+name = "r__firmware"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-ringc-format = { path = "../format" }
+r__format = { path = "../r__format" }
 cortex-m = "0.7"
 cortex-m-rt = "0.7"
 panic-halt = "1"
