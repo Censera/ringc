@@ -5,6 +5,7 @@ mod clock;
 mod controls;
 mod rtc;
 mod slot;
+mod watchdog;
 
 use cortex_m_rt::entry;
 use panic_halt as _;

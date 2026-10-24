@@ -1,6 +1,6 @@
-/* Sectors 0 to 5 are firmware. Sectors 6 and 7 are the schedule slots (ringc-format::layout). */
+/* Pages 0 to 47 are firmware. Slots A and B follow (ring_format::layout). */
 MEMORY
 {
-    FLASH : ORIGIN = 0x08000000, LENGTH = 256K
-    RAM   : ORIGIN = 0x20000000, LENGTH = 128K
+    FLASH : ORIGIN = 0x08000000, LENGTH = 48K
+    RAM   : ORIGIN = 0x20000000, LENGTH = 20K
 }
